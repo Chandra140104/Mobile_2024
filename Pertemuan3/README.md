@@ -66,3 +66,49 @@ Apa yang terjadi ? Jika terjadi error, silakan perbaiki namun tetap menggunakan 
 
 jawab:
 
+Perbaikan source code:
+
+<img  src = "input4.png">
+
+Output:
+
+<img  src = "output4.png">
+
+# Praktikum 3
+
+- Langkah 1:
+
+Ketik atau salin kode program berikut ke dalam fungsi main().
+
+Perbaikan source code:
+
+<img  src = "input5.png">
+
+Output:
+
+<img  src = "output5.png">
+
+- Langkah 3:
+
+Perbaikan source code:
+
+<img  src = "input6.png">
+
+Output:
+
+<img  src = "output6.png">
+
+Jawab: kode mengalami error dan perlu perbaikan dengan memberikan looping for serta mengganti operator yg sebelumnya || menjadi &&, outputnya menampilkan angka 0,1 dan mengalami break, kemudian di lanjutkan ke angka 7 hingga 20.
+
+# Tugas Praktikum
+
+Output: 
+
+<img  src = "output7.png">
+
+kode diatas menampilkan bilangan prima angka 0 sampai 201 dan setiap menampilkan bilangan prima akan tampil nama lengkap Fardiyani Afro'ul Yasinta dan NIM 2241760030.
+
+dart-calculator 
+
+<img  src = "output8.png">
+
