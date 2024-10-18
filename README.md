@@ -1,1 +1,3 @@
-NOTE: Mohon maaf untuk pertemuan 3 masih tahap progress
+Nama   : Chandra Bagus Sulaksono
+NIM    : 2241760079
+Kelas  : SIB-3D
