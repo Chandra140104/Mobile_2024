@@ -1922,8 +1922,256 @@
 //   }
 // }
 
-// tambahkan tekanan, kelembapan, tutupan awan
+// // tambahkan tekanan, kelembapan, tutupan awan
+// import 'package:flutter/material.dart';
+// import 'package:http/http.dart' as http;
+// import 'dart:convert';
+// import 'package:weatherappclima/constants.dart';
+
+// class HomeScreen extends StatefulWidget {
+//   @override
+//   _HomeScreenState createState() => _HomeScreenState();
+// }
+
+// class _HomeScreenState extends State<HomeScreen> {
+//   bool isLoaded = false;
+//   num temp = 0;
+//   num press = 0;
+//   num hum = 0;
+//   num cover = 0;
+//   String cityname = '';
+//   TextEditingController controller = TextEditingController();
+
+//   Future<void> getCityWeather(String cityname) async {
+//     final url =
+//         Uri.parse('https://api.openweathermap.org/data/2.5/weather?q=$cityname&appid=$apiKey&units=metric');
+//     try {
+//       final response = await http.get(url);
+//       if (response.statusCode == 200) {
+//         final data = json.decode(response.body);
+//         updateUI(data);
+//         setState(() {
+//           isLoaded = true;
+//         });
+//       } else {
+//         print("Error: ${response.statusCode}");
+//         setState(() {
+//           isLoaded = false;
+//           this.cityname = cityname; // Tetap tampilkan nama kota
+//         });
+//       }
+//     } catch (e) {
+//       print("Error: $e");
+//       setState(() {
+//         isLoaded = false;
+//         this.cityname = cityname; // Tetap tampilkan nama kota meskipun ada kesalahan
+//       });
+//     }
+//   }
+
+//   void updateUI(var decodedData) {
+//     setState(() {
+//       if (decodedData == null) {
+//         temp = 0;
+//         press = 0;
+//         hum = 0;
+//         cover = 0;
+//         cityname = '';
+//         isLoaded = false;
+//       } else {
+//         temp = decodedData['main']['temp'];
+//         press = decodedData['main']['pressure'];
+//         hum = decodedData['main']['humidity'];
+//         cover = decodedData['clouds']['all'];
+//         cityname = decodedData['name'];
+//         isLoaded = true;
+//       }
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     controller.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return SafeArea(
+//       child: Scaffold(
+//         resizeToAvoidBottomInset: true, // Agar layout menyesuaikan dengan keyboard
+//         body: Container(
+//           decoration: BoxDecoration(
+//             gradient: LinearGradient(
+//               begin: Alignment.topCenter,
+//               end: Alignment.bottomCenter,
+//               colors: [
+//                 Color(0xFF8FF43F),
+//                 Color(0xFF16A085),
+//               ],
+//             ),
+//           ),
+//           child: Center(
+//             child: SingleChildScrollView( // Tambahkan scroll agar tidak overflow
+//               child: Padding(
+//                 padding: const EdgeInsets.all(16.0),
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     // Input kota
+//                     Container(
+//                       width: MediaQuery.of(context).size.width * 0.85,
+//                       height: MediaQuery.of(context).size.height * 0.09,
+//                       padding: EdgeInsets.symmetric(horizontal: 10),
+//                       decoration: BoxDecoration(
+//                         color: Colors.black.withOpacity(0.3),
+//                         borderRadius: BorderRadius.all(Radius.circular(20)),
+//                       ),
+//                       child: Center(
+//                         child: TextFormField(
+//                           onFieldSubmitted: (String s) {
+//                             setState(() {
+//                               cityname = s;
+//                               getCityWeather(s);
+//                               isLoaded = false;
+//                               controller.clear();
+//                             });
+//                           },
+//                           controller: controller,
+//                           cursorColor: Colors.white,
+//                           style: TextStyle(
+//                               fontSize: 20,
+//                               fontWeight: FontWeight.w600,
+//                               color: Colors.white),
+//                           decoration: InputDecoration(
+//                             hintText: 'Search city',
+//                             hintStyle: TextStyle(
+//                               fontSize: 18,
+//                               color: Colors.white.withOpacity(0.7),
+//                               fontWeight: FontWeight.w600,
+//                             ),
+//                             prefixIcon: Icon(
+//                               Icons.search_rounded,
+//                               size: 25,
+//                               color: Colors.white.withOpacity(0.7),
+//                             ),
+//                             border: InputBorder.none,
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+//                     SizedBox(height: 30),
+//                     // Tampilkan nama kota
+//                     Padding(
+//                       padding: const EdgeInsets.all(8.0),
+//                       child: Row(
+//                         crossAxisAlignment: CrossAxisAlignment.end,
+//                         mainAxisAlignment: MainAxisAlignment.center,
+//                         children: [
+//                           Icon(
+//                             Icons.pin_drop,
+//                             color: Colors.red,
+//                             size: 40,
+//                           ),
+//                           SizedBox(width: 8),
+//                           Text(
+//                             cityname,
+//                             overflow: TextOverflow.ellipsis,
+//                             style: TextStyle(
+//                               fontSize: 28,
+//                               fontWeight: FontWeight.bold,
+//                               color: Colors.white,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                     SizedBox(height: 20),
+//                     // Kartu cuaca
+//                     Visibility(
+//                       visible: isLoaded,
+//                       child: Column(
+//                         children: [
+//                           // Kartu Suhu
+//                           buildWeatherCard(
+//                             'Temperature',
+//                             '${temp.toInt()} ºC',
+//                             'images/thermometer.png',
+//                           ),
+//                           // Kartu Tekanan
+//                           buildWeatherCard(
+//                             'Pressure',
+//                             '${press.toInt()} hPa',
+//                             'images/barometer.png',
+//                           ),
+//                           // Kartu Kelembapan
+//                           buildWeatherCard(
+//                             'Humidity',
+//                             '${hum.toInt()} %',
+//                             'images/humidity.png',
+//                           ),
+//                           // Kartu Tutupan Awan
+//                           buildWeatherCard(
+//                             'Cloud Cover',
+//                             '${cover.toInt()} %',
+//                             'images/cloud cover.png',
+//                           ),
+//                         ],
+//                       ),
+//                       replacement: CircularProgressIndicator(
+//                         color: Colors.white,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget buildWeatherCard(String title, String value, String imagePath) {
+//     return Container(
+//       width: double.infinity,
+//       height: MediaQuery.of(context).size.height * 0.10, // Sesuaikan tinggi kartu
+//       margin: EdgeInsets.symmetric(vertical: 10),
+//       decoration: BoxDecoration(
+//         borderRadius: BorderRadius.all(Radius.circular(15)),
+//         color: Colors.white,
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.grey.shade900,
+//             offset: Offset(1, 2),
+//             blurRadius: 3,
+//             spreadRadius: 1,
+//           ),
+//         ],
+//       ),
+//       child: Row(
+//         children: [
+//           Padding(
+//             padding: const EdgeInsets.all(8.0),
+//             child: Image(
+//               image: AssetImage(imagePath),
+//               width: MediaQuery.of(context).size.width * 0.09,
+//             ),
+//           ),
+//           SizedBox(width: 10),
+//           Text(
+//             '$title: $value',
+//             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// modifikasi
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:weatherappclima/constants.dart';
@@ -1939,12 +2187,61 @@ class _HomeScreenState extends State<HomeScreen> {
   num press = 0;
   num hum = 0;
   num cover = 0;
-  String cityname = '';
+  String cityname = 'Loading...';
+  String weatherMain = 'N/A';
+  String weatherDescription = 'N/A';
   TextEditingController controller = TextEditingController();
+  PageController pageController = PageController();
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentLocationAndWeather();
+  }
+
+  Future<void> getCurrentLocationAndWeather() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.low,
+        forceAndroidLocationManager: true,
+      );
+      if (position != null) {
+        fetchWeatherByLocation(position.latitude, position.longitude);
+      } else {
+        setState(() {
+          cityname = 'Location not found';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        cityname = 'Error fetching location';
+      });
+    }
+  }
+
+  Future<void> fetchWeatherByLocation(double lat, double lon) async {
+    final url =
+        '${domain}lat=$lat&lon=$lon&appid=$apiKey&units=metric';
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        updateUI(data);
+      } else {
+        setState(() {
+          cityname = 'Error fetching weather';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        cityname = 'Error fetching weather';
+      });
+    }
+  }
 
   Future<void> getCityWeather(String cityname) async {
     final url =
-        Uri.parse('https://api.openweathermap.org/data/2.5/weather?q=$cityname&appid=$apiKey&units=metric');
+        Uri.parse('${domain}q=$cityname&appid=$apiKey&units=metric');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -1954,17 +2251,15 @@ class _HomeScreenState extends State<HomeScreen> {
           isLoaded = true;
         });
       } else {
-        print("Error: ${response.statusCode}");
         setState(() {
           isLoaded = false;
-          this.cityname = cityname; // Tetap tampilkan nama kota
+          this.cityname = cityname;
         });
       }
     } catch (e) {
-      print("Error: $e");
       setState(() {
         isLoaded = false;
-        this.cityname = cityname; // Tetap tampilkan nama kota meskipun ada kesalahan
+        this.cityname = cityname;
       });
     }
   }
@@ -1976,13 +2271,17 @@ class _HomeScreenState extends State<HomeScreen> {
         press = 0;
         hum = 0;
         cover = 0;
-        cityname = '';
+        weatherMain = 'N/A';
+        weatherDescription = 'N/A';
+        cityname = 'Not available';
         isLoaded = false;
       } else {
         temp = decodedData['main']['temp'];
         press = decodedData['main']['pressure'];
         hum = decodedData['main']['humidity'];
         cover = decodedData['clouds']['all'];
+        weatherMain = decodedData['weather'][0]['main'];
+        weatherDescription = decodedData['weather'][0]['description'];
         cityname = decodedData['name'];
         isLoaded = true;
       }
@@ -1992,6 +2291,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     controller.dispose();
+    pageController.dispose();
     super.dispose();
   }
 
@@ -1999,134 +2299,202 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        resizeToAvoidBottomInset: true, // Agar layout menyesuaikan dengan keyboard
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFF8FF43F),
-                Color(0xFF16A085),
-              ],
-            ),
+        resizeToAvoidBottomInset: true,
+        body: Column(
+          children: [
+            // Search Box dengan padding
+            Padding(
+  padding: const EdgeInsets.all(18.0), // Padding di sekitar search box
+  child: Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: TextFormField(
+      onFieldSubmitted: (String s) {
+        if (s.isNotEmpty) {
+          getCityWeather(s);
+          controller.clear();
+        }
+      },
+      controller: controller,
+      cursorColor: Colors.black,
+      style: TextStyle(
+        fontSize: 18,
+        color: Colors.black,
+      ),
+      decoration: InputDecoration(
+        hintText: 'Search city',
+        hintStyle: TextStyle(
+          fontSize: 16,
+          color: Colors.black54,
+        ),
+        prefixIcon: Icon(
+          Icons.search_rounded,
+          color: Colors.black54,
+        ),
+        // Warna border hijau terang
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.lightGreen, // Border saat tidak aktif
+            width: 3.0,
           ),
-          child: Center(
-            child: SingleChildScrollView( // Tambahkan scroll agar tidak overflow
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Input kota
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      height: MediaQuery.of(context).size.height * 0.09,
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.3),
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.lightGreen, // Border saat fokus
+            width: 3.0,
+          ),
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Colors.lightGreen,
+          ),
+        ),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 15,
+        ),
+      ),
+    ),
+  ),
+),
+
+            // PageView untuk konten
+            Expanded(
+              child: PageView(
+                controller: pageController,
+                children: [
+                  // Slide Pertama
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0xFF8FF43F),
+                          Color(0xFF16A085),
+                        ],
                       ),
-                      child: Center(
-                        child: TextFormField(
-                          onFieldSubmitted: (String s) {
-                            setState(() {
-                              cityname = s;
-                              getCityWeather(s);
-                              isLoaded = false;
-                              controller.clear();
-                            });
-                          },
-                          controller: controller,
-                          cursorColor: Colors.white,
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: 'Search city',
-                            hintStyle: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white.withOpacity(0.7),
-                              fontWeight: FontWeight.w600,
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              cityname,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
-                            prefixIcon: Icon(
-                              Icons.search_rounded,
-                              size: 25,
-                              color: Colors.white.withOpacity(0.7),
+                            SizedBox(height: 10),
+                            Text(
+                              '${temp.toInt()} ºC',
+                              style: TextStyle(
+                                fontSize: 100,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
                             ),
-                            border: InputBorder.none,
+                            SizedBox(height: 10),
+                            Text(
+                              '$weatherMain: $weatherDescription',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 30),
+                            ElevatedButton(
+                              onPressed: () {
+                                pageController.nextPage(
+                                  duration: Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white, // Warna latar tombol
+                                iconColor: Colors.lightGreen, // Warna saat ditekan
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6), // Radius border tombol
+                                ),
+                              ),
+                              child: Text(
+                                "View Details",
+                                style: TextStyle(
+                                  color: Colors.lightGreen, // Warna teks tombol
+                                  fontWeight: FontWeight.bold, // Gaya teks
+                                ),
+                              ),
+                            ),
+
+                            
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Slide Kedua
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0xFF8FF43F),
+                          Color(0xFF16A085),
+                        ],
+                      ),
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Visibility(
+                          visible: isLoaded,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              buildWeatherCard(
+                                'Temperature',
+                                '${temp.toInt()} ºC',
+                                'images/thermometer.png',
+                              ),
+                              buildWeatherCard(
+                                'Pressure',
+                                '${press.toInt()} hPa',
+                                'images/barometer.png',
+                              ),
+                              buildWeatherCard(
+                                'Humidity',
+                                '${hum.toInt()} %',
+                                'images/humidity.png',
+                              ),
+                              buildWeatherCard(
+                                'Cloud Cover',
+                                '${cover.toInt()} %',
+                                'images/cloud cover.png',
+                              ),
+                            ],
+                          ),
+                          replacement: CircularProgressIndicator(
+                            color: Colors.white,
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(height: 30),
-                    // Tampilkan nama kota
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.pin_drop,
-                            color: Colors.red,
-                            size: 40,
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            cityname,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    // Kartu cuaca
-                    Visibility(
-                      visible: isLoaded,
-                      child: Column(
-                        children: [
-                          // Kartu Suhu
-                          buildWeatherCard(
-                            'Temperature',
-                            '${temp.toInt()} ºC',
-                            'images/thermometer.png',
-                          ),
-                          // Kartu Tekanan
-                          buildWeatherCard(
-                            'Pressure',
-                            '${press.toInt()} hPa',
-                            'images/barometer.png',
-                          ),
-                          // Kartu Kelembapan
-                          buildWeatherCard(
-                            'Humidity',
-                            '${hum.toInt()} %',
-                            'images/humidity.png',
-                          ),
-                          // Kartu Tutupan Awan
-                          buildWeatherCard(
-                            'Cloud Cover',
-                            '${cover.toInt()} %',
-                            'images/cloud cover.png',
-                          ),
-                        ],
-                      ),
-                      replacement: CircularProgressIndicator(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -2135,7 +2503,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget buildWeatherCard(String title, String value, String imagePath) {
     return Container(
       width: double.infinity,
-      height: MediaQuery.of(context).size.height * 0.10, // Sesuaikan tinggi kartu
+      height: MediaQuery.of(context).size.height * 0.10,
       margin: EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -2168,6 +2536,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-
-
